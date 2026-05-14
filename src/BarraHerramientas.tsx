@@ -1,4 +1,4 @@
-import Boton from './Boton'
+import Boton from './Componentes/Boton'
 
 export default function BarraHerramientas(props: any) {
   // botones para modificar la grilla
@@ -12,7 +12,7 @@ export default function BarraHerramientas(props: any) {
       <Boton texto="Cambiar Color" onClick={props.onCambiarColor} />
       
       <input 
-        type="text" 
+        type="text"    
         placeholder="Buscar..." 
         onChange={function(e) { props.onBuscar(e.target.value) }}
         style={{ marginLeft: '10px', padding: '4px' }}

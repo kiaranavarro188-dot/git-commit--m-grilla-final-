@@ -30,6 +30,11 @@ export class Grilla {
     this.filas.push(new Fila(nueva));
   }
 
+  public borrarFila(): void {
+
+  this.filas.pop();
+}
+
   public agregarColumna(): void {
     // si ya existe Extra le sumamos un numero
     let nombre = "Extra";
