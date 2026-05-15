@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react'
 import BarraHerramientas from './BarraHerramientas'
 import Grilla from './Grilla'
-import Boton from './Componentes/Boton'
 import { Grilla as GrillaLogica } from './Grilla/Grilla'
 import BotonAgregar from './Componentes/BotonAgregar'
 import BotonBorrar from './Componentes/BotonBorrar'
 import BotonBuscar from './Componentes/BotonBuscar'
+import Header from './Componentes/Header'
+import Modal from './Componentes/Modal'
 
 const datosIniciales1 = [
   { id: 1, nombre: 'Juan Perez', edad: 30, sexo: "Masculino", ciudad: "Buenos Aires" },
@@ -31,11 +32,12 @@ const datosIniciales2 = [
 export default function App() {
   // creamos las instancias de las clases con useRef
   const grillaPersonas = useRef(new GrillaLogica(datosIniciales1, ["id", "nombre", "edad", "sexo","pais", "ciudad"]));
-  const grillaHerramientas = useRef(new GrillaLogica(datosIniciales2, ['Herramienta', 'Operario', 'Cantidad']));
   const grillaHola = useRef(new GrillaLogica(datosIniciales2, ['Herramienta', 'Operario', 'Cantidad']));
 
   // useState de "tick" para forzar re-render de la vista
   const [, forzarRender] = useState(0);
+
+  const [modalAbierto, setModalAbierto] = useState(false);
 
   function actualizar() {
     forzarRender(function (x) { return x + 1; });
@@ -71,10 +73,11 @@ export default function App() {
     grillaPersonas.current.buscar(texto);
     actualizar();
   }
+  
 
   return (
     <div>
-      <h1>Mi Proyecto</h1>
+      <Header titulo="Mi Proyecto" />
 
       <BarraHerramientas
         onAgregarFila={agregarFila}
@@ -89,6 +92,15 @@ export default function App() {
       <BotonBorrar onClick={borrarFila} texto="Borrar Fila" />
 
       <BotonBuscar onClick={() => console.log('buscar')} />
+        <button onClick={() => setModalAbierto(true)}>
+        Abrir Modal
+        </button>
+        <Modal
+         abierto={modalAbierto}
+         titulo="Mi Modal"
+          onClose={() => setModalAbierto(false)}>
+          <p>Hola 😎 soy un modal reusable</p>
+        </Modal>
 
       <h3>Tabla de grillaHola</h3>
       <Grilla
@@ -100,4 +112,7 @@ export default function App() {
 
     
   )
+
+ 
+
 }
