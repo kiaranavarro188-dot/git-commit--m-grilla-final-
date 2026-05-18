@@ -8,14 +8,10 @@ import Sidebar from './Componentes/Sidebar'
 import BotonExportar from './Componentes/BotonExportar'
 import BotonRefrescar from './Componentes/BotonRefrescar'
 import BotonEditarColumnas from './Componentes/BotonEditarColumnas'
-<<<<<<< HEAD
-import BotonBorrarColumna from './Componentes/BotonBorrarColumna.tsx'
-=======
 import BotonAgregar from './Componentes/BotonAgregar'
 import BotonBorrar from './Componentes/BotonBorrar'
-import BotonBuscar from './Componentes/BotonBuscar';
+import BotonBuscar from './Componentes/BotonBuscar'
 import SignIn from './Componentes/SignIn';
->>>>>>> 252fd6e59bf53a0a75e60e97e958f3466b42ecbb
 
 const datosIniciales1 = [
   { id: 1, nombre: 'Juan Perez', edad: 30, sexo: "Masculino", ciudad: "Buenos Aires" },
@@ -23,7 +19,7 @@ const datosIniciales1 = [
   { id: 3, nombre: 'Pedro Ramirez', edad: 28, sexo: "Masculino", ciudad: "Rosario" },
   { id: 4, nombre: 'Ana Rodriguez', edad: 22, sexo: "Femenino", ciudad: "Mendoza" },
   { id: 5, nombre: 'Carlos Sanchez', edad: 35, sexo: "Masculino", ciudad: "Tucuman" },
-,
+
 ];
 
 const datosIniciales2 = [
@@ -31,37 +27,25 @@ const datosIniciales2 = [
 ];
 
 export default function App() {
-  const [logueado, setLogueado] = useState(false);
+  const [logueado, setLogueado] = useState(false)
   const [sidebarAbierto, setSidebarAbierto] = useState(true);
 
   // creamos las instancias de las clases con useRef
-  const grillaPersonas = useRef(new GrillaLogica(datosIniciales1, ["id", "nombre", "edad", "sexo", "ciudad"]));
+  const grillaPersonas = useRef(new GrillaLogica(datosIniciales1, ["id", "nombre", "edad", "sexo", "pais", "ciudad"]));
   const grillaHerramientas = useRef(new GrillaLogica(datosIniciales2, ['Herramienta', 'Operario', 'Cantidad']));
 
   // useState de "tick" para forzar re-render de la vista
   const [, forzarRender] = useState(0);
 
-  // ESTADOS DE LOS MODALES 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoModal, setModoModal] = useState<'editar' | 'ver'>('editar');
   const [filaSeleccionada, setFilaSeleccionada] = useState<any>(null);
-
-<<<<<<< HEAD
-  const [modalEditarColsAbierto, setModalEditarColsAbierto] = useState(false);
-  const [modalBorrarColsAbierto, setModalBorrarColsAbierto] = useState(false);
-=======
-  if (!logueado) {
-    return (
-      <SignIn onSignIn={() => setLogueado(true)} />
-    );
-  }
->>>>>>> 252fd6e59bf53a0a75e60e97e958f3466b42ecbb
 
   function actualizar() {
     forzarRender(function (x) { return x + 1; });
   }
 
-  // handlers de la barra de herramientas
+  // cada handler llama a un metodo de la clase y despues a actualizar
   function agregarFila() {
     grillaPersonas.current.agregarFila();
     actualizar();
@@ -77,6 +61,11 @@ export default function App() {
     actualizar();
   }
 
+  function borrarFila() {
+    grillaPersonas.current.borrarFila();
+    actualizar();
+  }
+
   function cambiarColor() {
     grillaPersonas.current.cambiarColor();
     actualizar();
@@ -87,9 +76,9 @@ export default function App() {
     actualizar();
   }
 
-  // 
+  // ============================================================
   // FUNCIONES QUE CONECTAN LOS BOTONES DE ACCION CON EL MODAL
-  // 
+  // ============================================================
   function abrirModalEditar(indice: number) {
     const fila = grillaPersonas.current.getFila(indice);
     setFilaSeleccionada({ ...fila, _indice: indice });
@@ -109,21 +98,35 @@ export default function App() {
     setFilaSeleccionada(null);
   }
 
-  // borra la fila sin preguntar
+  // borra la fila directamente sin preguntar
   function eliminarFila(indice: number) {
     grillaPersonas.current.eliminarFila(indice);
     actualizar();
   }
 
+  // refresca la grilla
   function refrescar() {
     actualizar();
     alert('Grilla refrescada');
   }
 
+  // exporta los datos a la consola
   function exportar() {
     const datos = grillaPersonas.current.getFilasFiltradas();
     console.log('Datos exportados:', datos);
     alert('Datos exportados a la consola (F12 para ver)');
+  }
+
+  // renombra las columnas una por una con prompts
+  function editarColumnas() {
+    const columnas = grillaPersonas.current.getColumnas();
+    for (const col of columnas) {
+      const nuevoNombre = prompt(`Nombre nuevo para "${col}" (cancelar para dejar igual):`, col);
+      if (nuevoNombre && nuevoNombre !== col) {
+        grillaPersonas.current.renombrarColumna(col, nuevoNombre);
+      }
+    }
+    actualizar();
   }
 
   // se llama desde el contenido del modal cuando aprietan Guardar
@@ -132,39 +135,12 @@ export default function App() {
     actualizar();
     cerrarModal();
   }
-  // EDITAR Y BORRAR COLUMNAS CON EL MODAL 
-  
-  function abrirModalEditarColumnas() {
-    setModalEditarColsAbierto(true);
-  }
-
-  function abrirModalBorrarColumnas() {
-    setModalBorrarColsAbierto(true);
-  }
-
-  function guardarColumnasRenombradas(cambios: any) {
-    for (const viejo in cambios) {
-      const nuevo = cambios[viejo];
-      if (nuevo && nuevo !== viejo) {
-        grillaPersonas.current.renombrarColumna(viejo, nuevo);
-      }
-    }
-    actualizar();
-    setModalEditarColsAbierto(false);
-  }
-
-  function borrarUnaColumna(nombre: string) {
-    grillaPersonas.current.borrarColumna(nombre);
-    actualizar();
-  }
 
   return (
 
     <div>
-<<<<<<< HEAD
-=======
+      {!logueado && <SignIn onSignIn={() => setLogueado(true)} />}
 
->>>>>>> 252fd6e59bf53a0a75e60e97e958f3466b42ecbb
       <Header
         titulo="Mi Proyecto"
         onMenuClick={() => setSidebarAbierto(!sidebarAbierto)}
@@ -174,39 +150,28 @@ export default function App() {
         {sidebarAbierto && (
           <Sidebar
             items={[
-<<<<<<< HEAD
-              { label: "Dashboard", onClick: () => console.log("Dashboard") },
-              { label: "Usuarios", onClick: () => console.log("Usuarios") },
-              { label: "Configuración", onClick: () => console.log("Config") },
-=======
               {
                 label: "Dashboard",
-                // AQUÍ AGREGAMOS EL DESPLEGABLE DE DASHBOARD
+                onClick: () => console.log("Dashboard"),
+              },
+              {
+                label: "Catálogos",
                 subItems: [
-                  { label: "Resumen General", onClick: () => console.log("Resumen General") },
-                  { label: "Estadísticas", onClick: () => console.log("Estadísticas") },
-                  { label: "Reportes", onClick: () => console.log("Reportes") },
+                  { label: "Personas", onClick: () => console.log("Personas") },
+                  { label: "Herramientas", onClick: () => console.log("Herramientas") }
                 ]
               },
               {
-                label: "Usuarios",
-                // AQUÍ AGREGAMOS EL DESPLEGABLE DE USUARIOS
+                label: "Administración",
                 subItems: [
-                  { label: "Ver Listado", onClick: () => console.log("Ver Listado") },
-                  { label: "Añadir Nuevo", onClick: () => console.log("Añadir Nuevo") },
-                  { label: "Roles y Permisos", onClick: () => console.log("Roles y Permisos") },
+                  { label: "Usuarios", onClick: () => console.log("Usuarios") },
+                  { label: "Roles", onClick: () => console.log("Roles") }
                 ]
               },
               {
                 label: "Configuración",
-                // ESTE ES EL DESPLEGABLE DE CONFIGURACIÓN
-                subItems: [
-                  { label: "Perfil", onClick: () => console.log("Perfil") },
-                  { label: "Seguridad", onClick: () => console.log("Seguridad") },
-                  { label: "Preferencias", onClick: () => console.log("Preferencias") },
-                ],
+                onClick: () => console.log("Config"),
               },
->>>>>>> 252fd6e59bf53a0a75e60e97e958f3466b42ecbb
             ]}
           />
         )}
@@ -220,16 +185,22 @@ export default function App() {
             onBuscar={buscar}
           />
 
+          <div style={{ display: 'flex', gap: '8px', margin: '10px 0' }}>
+            <BotonAgregar onClick={agregarFila} texto="Agregar Fila" />
+            <BotonBorrar onClick={borrarFila} texto="Borrar Fila" />
+            <BotonBuscar onClick={() => console.log('buscar')} />
+          </div>
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
             <h3>Listado de Personas</h3>
             <div>
-              <BotonEditarColumnas onClick={abrirModalEditarColumnas} />
-              <BotonBorrarColumna onClick={abrirModalBorrarColumnas} />
+              <BotonEditarColumnas onClick={editarColumnas} />
               <BotonExportar onClick={exportar} />
               <BotonRefrescar onClick={refrescar} />
             </div>
           </div>
 
+          {/* la grilla recibe callbacks para que sus botones de fila avisen al padre */}
           <Grilla
             instancia={grillaPersonas.current}
             onActualizar={actualizar}
@@ -256,6 +227,7 @@ export default function App() {
         </div>
       </div>
 
+      {/* MODAL conectado con los botones de accion de la grilla */}
       <Modal
         abierto={modalAbierto}
         titulo={modoModal === 'editar' ? 'Editar Persona' : 'Ver Detalle'}
@@ -270,36 +242,12 @@ export default function App() {
           />
         )}
       </Modal>
-
-      <Modal
-        abierto={modalEditarColsAbierto}
-        titulo="Editar Nombres de Columnas"
-        onClose={function() { setModalEditarColsAbierto(false) }}
-      >
-        <EditarColumnasContenido
-          columnas={grillaPersonas.current.getColumnas()}
-          onGuardar={guardarColumnasRenombradas}
-          onCancelar={function() { setModalEditarColsAbierto(false) }}
-        />
-      </Modal>
-
-      <Modal
-        abierto={modalBorrarColsAbierto}
-        titulo="Borrar Columna"
-        onClose={function() { setModalBorrarColsAbierto(false) }}
-      >
-        <BorrarColumnaContenido
-          columnas={grillaPersonas.current.getColumnas()}
-          onBorrar={borrarUnaColumna}
-          onCerrar={function() { setModalBorrarColsAbierto(false) }}
-        />
-      </Modal>
     </div>
   )
 }
 
-
-// contenido del modal de editar/ver una fila
+// componente interno que dibuja lo que va adentro del modal
+// si modo='ver' muestra texto, si modo='editar' muestra inputs
 function ContenidoModal(props: any) {
   const [datosEditados, setDatosEditados] = useState({ ...props.datos })
 
@@ -309,15 +257,12 @@ function ContenidoModal(props: any) {
     })
   }
 
-<<<<<<< HEAD
-  const campos = Object.keys(props.datos).filter(function(k) {
-=======
   // sacamos los campos internos que no queremos mostrar
   const campos = Object.keys(props.datos).filter(function (k) {
->>>>>>> 252fd6e59bf53a0a75e60e97e958f3466b42ecbb
     return k !== '_indice' && k !== '_indiceOriginal'
   })
 
+  // modo ver: solo muestra los datos
   if (props.modo === 'ver') {
     return (
       <div>
@@ -332,6 +277,7 @@ function ContenidoModal(props: any) {
     )
   }
 
+  // modo editar: muestra inputs y botones de guardar/cancelar
   return (
     <div>
       {campos.map(function (campo) {
@@ -359,109 +305,6 @@ function ContenidoModal(props: any) {
           style={{ padding: '8px 16px', background: 'white', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
         >
           Cancelar
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// contenido del modal de editar nombres de columnas (inputs para todas las columnas)
-function EditarColumnasContenido(props: any) {
-  const [nombres, setNombres] = useState(function() {
-    const inicial: any = {}
-    for (const col of props.columnas) {
-      inicial[col] = col
-    }
-    return inicial
-  })
-
-  function handleCambio(viejo: string, nuevo: string) {
-    setNombres(function(prev: any) {
-      return { ...prev, [viejo]: nuevo }
-    })
-  }
-
-  return (
-    <div>
-      <p style={{ marginTop: 0, color: '#666' }}>Modifica los nombres y presiona Guardar:</p>
-      {props.columnas.map(function(col: string) {
-        return (
-          <div key={col} style={{ margin: '8px 0' }}>
-            <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', color: '#666' }}>
-              {col}:
-            </label>
-            <input
-              type="text"
-              value={nombres[col]}
-              onChange={function(e) { handleCambio(col, e.target.value) }}
-              style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
-            />
-          </div>
-        )
-      })}
-      <div style={{ marginTop: '15px', display: 'flex', gap: '8px' }}>
-        <button
-          onClick={function() { props.onGuardar(nombres) }}
-          style={{ padding: '8px 16px', background: '#1e40af', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Guardar
-        </button>
-        <button
-          onClick={props.onCancelar}
-          style={{ padding: '8px 16px', background: 'white', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Cancelar
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// contenido del modal de borrar columna (lista cada columna con un boton al lado)
-function BorrarColumnaContenido(props: any) {
-  return (
-    <div>
-      <p style={{ marginTop: 0, color: '#666' }}>Hacé click en "Borrar" al lado de la columna que quieras eliminar:</p>
-      {props.columnas.map(function(col: string) {
-        const esProtegida = col === 'id'
-        return (
-          <div
-            key={col}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '8px 12px',
-              margin: '4px 0',
-              background: '#f5f5f5',
-              borderRadius: '4px'
-            }}
-          >
-            <span>{col}</span>
-            <button
-              onClick={function() { props.onBorrar(col) }}
-              disabled={esProtegida}
-              style={{
-                padding: '4px 12px',
-                background: esProtegida ? '#ccc' : '#ef4444',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: esProtegida ? 'not-allowed' : 'pointer',
-                fontSize: '13px'
-              }}
-            >
-              {esProtegida ? 'Protegida' : 'Borrar'}
-            </button>
-          </div>
-        )
-      })}
-      <div style={{ marginTop: '15px' }}>
-        <button
-          onClick={props.onCerrar}
-          style={{ padding: '8px 16px', background: 'white', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Cerrar
         </button>
       </div>
     </div>

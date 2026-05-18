@@ -4,11 +4,15 @@ import BotonEliminar from './Componentes/BotonEliminar'
 import BotonVer from './Componentes/BotonVer'
 import BotonAnterior from './Componentes/BotonAnterior'
 import BotonSiguiente from './Componentes/BotonSiguiente'
+// 🛠️ Importamos el modal que ya tienen separado en componentes
+import Modal from './Componentes/Modal' 
 
-// componente de la grilla. recibe callbacks del padre para editar/eliminar/ver
 export default function Grilla(props: any) {
   const [pagina, setPagina] = useState(1)
   const [porPagina, setPorPagina] = useState(10)
+  
+  // 🛠️ Estado para controlar la visibilidad del modal de editar columnas
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const grilla = props.instancia
   const datosFiltrados = grilla.getFilasFiltradas()
@@ -24,7 +28,7 @@ export default function Grilla(props: any) {
 
   function handleBusqueda(e: any) {
     grilla.buscar(e.target.value)
-    setPagina(1) // si busca, vuelve a la primera pagina
+    setPagina(1) 
     props.onActualizar()
   }
 
@@ -43,6 +47,26 @@ export default function Grilla(props: any) {
 
   return (
     <div style={{ marginTop: '10px' }}>
+      
+      {/* 🛠️ MODAL DE EDITAR COLUMNAS: Totalmente integrado y reutilizable */}
+      <Modal 
+        abierto={isModalOpen} 
+        titulo="EDITAR COLUMNAS" 
+        onClose={function() { setIsModalOpen(false) }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', color: '#333' }}>
+          {columnas.map(function(col: string) {
+            return (
+              <div key={col} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{col}</span>
+                {/* Acá adentro viven los interruptores/switches que armó Galia */}
+                <input type="checkbox" defaultChecked style={{ width: '40px', height: '20px', cursor: 'pointer' }} />
+              </div>
+            )
+          })}
+        </div>
+      </Modal>
+
       {/* barra superior: mostrar a la izquierda, buscar a la derecha */}
       <div style={{
         display: 'flex',
@@ -59,14 +83,29 @@ export default function Grilla(props: any) {
             <option value={50}>50</option>
           </select>
         </div>
-        <div>
-          <label>Buscar: </label>
+
+        {/* 🛠️ El botón azul de BUSCAR se vincula con el input y la lógica nativa */}
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
           <input
             type="text"
             placeholder="Buscar..."
             onChange={handleBusqueda}
-            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc' }}
+            style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #ccc' }}
           />
+          <button 
+            style={{ 
+              padding: '6px 14px', 
+              background: '#102a54', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px', 
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+            onClick={props.onActualizar}
+          >
+            Buscar
+          </button>
         </div>
       </div>
 
@@ -105,7 +144,6 @@ export default function Grilla(props: any) {
                   )
                 })}
                 <td style={{ border: `1px solid ${color}`, padding: '8px' }}>
-                  {/* los botones llaman a las funciones que vienen del padre por props */}
                   <BotonEditar onClick={function() { props.onEditar(originalIndex) }} />
                   <BotonEliminar onClick={function() { props.onEliminar(originalIndex) }} />
                   <BotonVer onClick={function() { props.onVer(originalIndex) }} />
