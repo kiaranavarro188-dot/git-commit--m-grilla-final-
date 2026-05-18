@@ -1,16 +1,17 @@
-import { Edit } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import Boton from './Boton'
+import { colores } from './Colores'
 
-// boton para editar, celeste con icono de lapiz
+// boton de accion para editar fila
+// icono-solo, fondo azul oscuro (primario)
 export default function BotonEditar(props: any) {
-  const texto = props.texto || 'Editar'
-
   return (
     <Boton
-      texto={texto}
       onClick={props.onClick}
-      variante="celeste"
-      icono={Edit}
+      icono={Pencil}
+      variante="iconoSolo"
+      colorFondo={colores.primario}
+      title="Editar"
     />
   )
 }
