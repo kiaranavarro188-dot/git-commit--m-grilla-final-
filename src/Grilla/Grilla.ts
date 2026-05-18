@@ -52,6 +52,18 @@ export class Grilla {
     this.fuente = this.fuentes[this.iFuente];
   }
 
+  public renombrarColumna(viejoNombre: string, nuevoNombre: string): void {
+  const indice = this.columnas.indexOf(viejoNombre)
+  if (indice !== -1) {
+    this.columnas[indice] = nuevoNombre
+   
+    for (const fila of this.filas) {
+      const valor = fila.getCampo(viejoNombre)
+      fila.setCampo(nuevoNombre, valor)
+    }
+  }
+}
+
   public cambiarColor(): void {
     this.iColor = (this.iColor + 1) % this.colores.length;
     this.color = this.colores[this.iColor];
@@ -63,7 +75,24 @@ export class Grilla {
 
   public editarFila(indice: number, datos: any): void {
     if (this.filas[indice]) this.filas[indice] = new Fila(datos);
+
+
   }
+public eliminarFila(indice: number): void {
+  // saca la fila del array
+  this.filas.splice(indice, 1);
+}
+
+public getFila(indice: number): any {
+  // devuelve el objeto plano de una fila especifica
+  if (this.filas[indice]) {
+    return this.filas[indice].toObjeto();
+  }
+
+  
+  return null;
+}
+
 
   // getters
   public getFilasFiltradas(): any[] {
