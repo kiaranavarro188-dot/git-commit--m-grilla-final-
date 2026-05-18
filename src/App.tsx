@@ -7,10 +7,6 @@ import Modal from './Componentes/Modal'
 import Sidebar from './Componentes/Sidebar'
 import BotonExportar from './Componentes/BotonExportar'
 import BotonRefrescar from './Componentes/BotonRefrescar'
-import BotonEditarColumnas from './Componentes/BotonEditarColumnas'
-import BotonAgregar from './Componentes/BotonAgregar'
-import BotonBorrar from './Componentes/BotonBorrar'
-import BotonBuscar from './Componentes/BotonBuscar'
 import SignIn from './Componentes/SignIn';
 
 const datosIniciales1 = [
@@ -19,7 +15,6 @@ const datosIniciales1 = [
   { id: 3, nombre: 'Pedro Ramirez', edad: 28, sexo: "Masculino", ciudad: "Rosario" },
   { id: 4, nombre: 'Ana Rodriguez', edad: 22, sexo: "Femenino", ciudad: "Mendoza" },
   { id: 5, nombre: 'Carlos Sanchez', edad: 35, sexo: "Masculino", ciudad: "Tucuman" },
-
 ];
 
 const datosIniciales2 = [
@@ -30,25 +25,20 @@ export default function App() {
   const [logueado, setLogueado] = useState(false)
   const [sidebarAbierto, setSidebarAbierto] = useState(true);
 
-  // creamos las instancias de las clases con useRef
   const grillaPersonas = useRef(new GrillaLogica(datosIniciales1, ["id", "nombre", "edad", "sexo", "pais", "ciudad"]));
   const grillaHerramientas = useRef(new GrillaLogica(datosIniciales2, ['Herramienta', 'Operario', 'Cantidad']));
 
-  // useState de "tick" para forzar re-render de la vista
   const [, forzarRender] = useState(0);
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoModal, setModoModal] = useState<'editar' | 'ver'>('editar');
   const [filaSeleccionada, setFilaSeleccionada] = useState<any>(null);
 
+  const abrirModalModificarColumna = useRef<(() => void) | null>(null)
+  const abrirModalBorrarColumna = useRef<(() => void) | null>(null)
+
   function actualizar() {
     forzarRender(function (x) { return x + 1; });
-  }
-
-  // cada handler llama a un metodo de la clase y despues a actualizar
-  function agregarFila() {
-    grillaPersonas.current.agregarFila();
-    actualizar();
   }
 
   function agregarColumna() {
@@ -58,11 +48,6 @@ export default function App() {
 
   function cambiarFuente() {
     grillaPersonas.current.cambiarFuente();
-    actualizar();
-  }
-
-  function borrarFila() {
-    grillaPersonas.current.borrarFila();
     actualizar();
   }
 
@@ -76,9 +61,6 @@ export default function App() {
     actualizar();
   }
 
-  // ============================================================
-  // FUNCIONES QUE CONECTAN LOS BOTONES DE ACCION CON EL MODAL
-  // ============================================================
   function abrirModalEditar(indice: number) {
     const fila = grillaPersonas.current.getFila(indice);
     setFilaSeleccionada({ ...fila, _indice: indice });
@@ -98,49 +80,34 @@ export default function App() {
     setFilaSeleccionada(null);
   }
 
-  // borra la fila directamente sin preguntar
   function eliminarFila(indice: number) {
     grillaPersonas.current.eliminarFila(indice);
     actualizar();
   }
 
-  // refresca la grilla
   function refrescar() {
     actualizar();
     alert('Grilla refrescada');
   }
 
-  // exporta los datos a la consola
   function exportar() {
     const datos = grillaPersonas.current.getFilasFiltradas();
     console.log('Datos exportados:', datos);
     alert('Datos exportados a la consola (F12 para ver)');
   }
 
-  // renombra las columnas una por una con prompts
-  function editarColumnas() {
-    const columnas = grillaPersonas.current.getColumnas();
-    for (const col of columnas) {
-      const nuevoNombre = prompt(`Nombre nuevo para "${col}" (cancelar para dejar igual):`, col);
-      if (nuevoNombre && nuevoNombre !== col) {
-        grillaPersonas.current.renombrarColumna(col, nuevoNombre);
-      }
-    }
-    actualizar();
-  }
-
-  // se llama desde el contenido del modal cuando aprietan Guardar
   function guardarCambiosModal(nuevosDatos: any) {
     grillaPersonas.current.editarFila(filaSeleccionada._indice, nuevosDatos);
     actualizar();
     cerrarModal();
   }
 
+  if (!logueado) {
+    return <SignIn onSignIn={() => setLogueado(true)} title="ACCESO AL SISTEMA" />;
+  }
+
   return (
-
     <div>
-      {!logueado && <SignIn onSignIn={() => setLogueado(true)} />}
-
       <Header
         titulo="Mi Proyecto"
         onMenuClick={() => setSidebarAbierto(!sidebarAbierto)}
@@ -150,10 +117,7 @@ export default function App() {
         {sidebarAbierto && (
           <Sidebar
             items={[
-              {
-                label: "Dashboard",
-                onClick: () => console.log("Dashboard"),
-              },
+              { label: "Dashboard", onClick: () => console.log("Dashboard") },
               {
                 label: "Catálogos",
                 subItems: [
@@ -168,51 +132,46 @@ export default function App() {
                   { label: "Roles", onClick: () => console.log("Roles") }
                 ]
               },
-              {
-                label: "Configuración",
-                onClick: () => console.log("Config"),
-              },
+              { label: "Configuración", onClick: () => console.log("Config") },
             ]}
           />
         )}
 
         <div style={{ flex: 1, padding: '20px' }}>
+
           <BarraHerramientas
-            onAgregarFila={agregarFila}
+          
             onAgregarColumna={agregarColumna}
+            onModificarColumna={() => abrirModalModificarColumna.current?.()}
+            onBorrarColumna={() => abrirModalBorrarColumna.current?.()}
             onCambiarFuente={cambiarFuente}
             onCambiarColor={cambiarColor}
             onBuscar={buscar}
           />
-
-          <div style={{ display: 'flex', gap: '8px', margin: '10px 0' }}>
-            <BotonAgregar onClick={agregarFila} texto="Agregar Fila" />
-            <BotonBorrar onClick={borrarFila} texto="Borrar Fila" />
-            <BotonBuscar onClick={() => console.log('buscar')} />
-          </div>
+          
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
             <h3>Listado de Personas</h3>
             <div>
-              <BotonEditarColumnas onClick={editarColumnas} />
               <BotonExportar onClick={exportar} />
               <BotonRefrescar onClick={refrescar} />
             </div>
           </div>
 
-          {/* la grilla recibe callbacks para que sus botones de fila avisen al padre */}
           <Grilla
             instancia={grillaPersonas.current}
             onActualizar={actualizar}
             onEditar={abrirModalEditar}
             onEliminar={eliminarFila}
             onVer={abrirModalVer}
+            onSetModalModificar={(fn: () => void) => { abrirModalModificarColumna.current = fn }}
+            onSetModalBorrar={(fn: () => void) => { abrirModalBorrarColumna.current = fn }}
           />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px' }}>
             <h3>Listado de Herramientas</h3>
             <div>
-              <BotonExportar onClick={function () { console.log('exportar herramientas') }} />
+              <BotonExportar onClick={() => console.log('exportar herramientas')} />
               <BotonRefrescar onClick={actualizar} />
             </div>
           </div>
@@ -220,14 +179,13 @@ export default function App() {
           <Grilla
             instancia={grillaHerramientas.current}
             onActualizar={actualizar}
-            onEditar={function () { alert('Modal de herramientas pendiente') }}
-            onEliminar={function () { console.log('eliminar herramienta') }}
-            onVer={function () { alert('Ver herramienta') }}
+            onEditar={() => alert('Modal de herramientas pendiente')}
+            onEliminar={() => console.log('eliminar herramienta')}
+            onVer={() => alert('Ver herramienta')}
           />
         </div>
       </div>
 
-      {/* MODAL conectado con los botones de accion de la grilla */}
       <Modal
         abierto={modalAbierto}
         titulo={modoModal === 'editar' ? 'Editar Persona' : 'Ver Detalle'}
@@ -246,8 +204,6 @@ export default function App() {
   )
 }
 
-// componente interno que dibuja lo que va adentro del modal
-// si modo='ver' muestra texto, si modo='editar' muestra inputs
 function ContenidoModal(props: any) {
   const [datosEditados, setDatosEditados] = useState({ ...props.datos })
 
@@ -257,12 +213,10 @@ function ContenidoModal(props: any) {
     })
   }
 
-  // sacamos los campos internos que no queremos mostrar
   const campos = Object.keys(props.datos).filter(function (k) {
     return k !== '_indice' && k !== '_indiceOriginal'
   })
 
-  // modo ver: solo muestra los datos
   if (props.modo === 'ver') {
     return (
       <div>
@@ -277,7 +231,6 @@ function ContenidoModal(props: any) {
     )
   }
 
-  // modo editar: muestra inputs y botones de guardar/cancelar
   return (
     <div>
       {campos.map(function (campo) {

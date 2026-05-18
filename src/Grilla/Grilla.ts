@@ -1,8 +1,6 @@
 import { Fila } from './Fila'
 
-// clase Grilla, aca vive la logica de la tabla
 export class Grilla {
-  // atributos privados, solo se acceden por getters
   private filas: Fila[];
   private columnas: string[];
   private fuente: string;
@@ -21,7 +19,6 @@ export class Grilla {
     this.busqueda = "";
   }
 
-  // metodos para modificar la tabla
   public agregarFila(): void {
     const nueva: any = { id: this.filas.length + 1 };
     for (const col of this.columnas) {
@@ -35,7 +32,6 @@ export class Grilla {
   }
 
   public agregarColumna(): void {
-    // si ya existe Extra le sumamos un numero
     let nombre = "Extra";
     let n = 1;
     while (this.columnas.includes(nombre)) {
@@ -65,7 +61,6 @@ export class Grilla {
   }
 
   public eliminarFila(indice: number): void {
-    // saca la fila del array
     this.filas.splice(indice, 1);
   }
 
@@ -87,22 +82,18 @@ export class Grilla {
     }
   }
 
-  public borrarColumna(nombre: string): void {
-    // no dejar borrar la columna id
-    if (nombre === 'id') return
-
-    const indice = this.columnas.indexOf(nombre)
+  public borrarColumna(nombre?: string): void {
+    const target = nombre ?? [...this.columnas].reverse().find(c => c !== 'id');
+    if (!target || target === 'id') return;
+    const indice = this.columnas.indexOf(target);
     if (indice !== -1) {
-      // saca la columna del array
-      this.columnas.splice(indice, 1)
-      // tambien saca el campo de cada fila
+      this.columnas.splice(indice, 1);
       for (const fila of this.filas) {
-        fila.setCampo(nombre, undefined)
+        fila.setCampo(target, undefined);
       }
     }
   }
 
-  // getters
   public getFilasFiltradas(): any[] {
     const texto = this.busqueda.toLowerCase();
     return this.filas
