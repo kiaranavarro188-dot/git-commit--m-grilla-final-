@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Fondo oscuro borroso general */
+.signin-overlay {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #000f64fa 0%, #1348ac 100%);
+  /* Oscuro semitransparente como la captura */
+  backdrop-filter: blur(4px);
+  /* Por si la imagen de fondo está desenfocada */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Caja Modal Oscura */
+.signin-modal {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background-color: #000000;
+  /* Gris casi negro muy parejo como la imagen */
+  border-radius: 12px;
+  padding: 2.5rem 2rem 2rem 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+}
+
+/* Botón cerrar X arriba a la derecha */
+.signin-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #e4ddddaf;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.signin-close:hover {
+  background-color: rgba(255, 255, 255, 0.801);
+  color: #ffffff;
+}
+
+/* Logo Circular Superior */
+.signin-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.signin-logo-placeholder,
+.signin-logo-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 2px #d1d5db;
+  /* Borde interno plateado simulado */
+  overflow: hidden;
+  object-fit: cover;
+}
+
+/* Título */
+.signin-title {
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  /* Bien fuerte gruesa como la foto */
+  text-align: center;
+  letter-spacing: 3px;
+  /* Muy espaciado */
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Linea recta verde */
+.signin-decorator-line {
+  width: 40px;
+  height: 2px;
+  background-color: #002064;
+  /* Verde musgo tipo escudo */
+  margin: 0.75rem auto 2.5rem auto;
+  /* Separación con los inputs */
+}
+
+/* Inputs */
+.signin-form-dark {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.signin-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.signin-input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  /* Gris azulado medio */
+  pointer-events: none;
+}
+
+.signin-input-dark {
+  width: 100%;
+  background-color: #edf2f7;
+  /* Gris clareano/azulado muy suave */
+  border: none;
+  border-radius: 8px;
+  padding: 14px 14px 14px 44px;
+  /* Padding izquierdo para que no pise el icono */
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: box-shadow 0.2s ease;
+}
+
+.signin-input-dark:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+  /* Borde azul de foco opcional */
+}
+
+.signin-submit-dark {
+  width: 100%;
+  background-color: #002064;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-top: 0.5rem;
+  font-family: inherit;
+}
+
+.signin-submit-dark:hover {
+  background-color: #1b5e20;
+}
+
+.signin-submit-dark:active {
+  transform: translateY(1px);
+}
+
+/* Footer Bottom Links */
+.signin-footer-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e7e4c4;
+  /* Linea sutil entre form y links */
+}
+
+.signin-link-dark {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.signin-link-dark:hover {
+  color: #9ca3af;
+  text-decoration: underline;
+}
