@@ -7,6 +7,7 @@ import BotonBorrar from './Componentes/BotonBorrar'
 import BotonBuscar from './Componentes/BotonBuscar'
 import Header from './Componentes/Header'
 import Modal from './Componentes/Modal'
+import Sidebar from './Componentes/Sidebar'
 
 const datosIniciales1 = [
   { id: 1, nombre: 'Juan Perez', edad: 30, sexo: "Masculino", ciudad: "Buenos Aires" },
@@ -30,6 +31,9 @@ const datosIniciales2 = [
 ];
 
 export default function App() {
+  
+  const [sidebarAbierto, setSidebarAbierto] = useState(true);
+  
   // creamos las instancias de las clases con useRef
   const grillaPersonas = useRef(new GrillaLogica(datosIniciales1, ["id", "nombre", "edad", "sexo","pais", "ciudad"]));
   const grillaHola = useRef(new GrillaLogica(datosIniciales2, ['Herramienta', 'Operario', 'Cantidad']));
@@ -78,6 +82,7 @@ export default function App() {
   return (
     <div>
       <Header titulo="Mi Proyecto" />
+      
 
       <BarraHerramientas
         onAgregarFila={agregarFila}
@@ -85,7 +90,27 @@ export default function App() {
         onCambiarFuente={cambiarFuente}
         onCambiarColor={cambiarColor}
         onBuscar={buscar}
+        onMenuClick={() => setSidebarAbierto(!sidebarAbierto)}
       />
+{sidebarAbierto && (
+  <Sidebar
+    items={[
+      {
+        label: "Dashboard",
+        onClick: () => console.log("Dashboard"),
+      },
+      {
+        label: "Usuarios",
+        onClick: () => console.log("Usuarios"),
+      },
+      {
+        label: "Configuración",
+        onClick: () => console.log("Config"),
+      },
+    ]}
+  />
+)}
+    /
       
       <BotonAgregar onClick={agregarFila} texto="Agregar Fila" />
       
@@ -99,7 +124,7 @@ export default function App() {
          abierto={modalAbierto}
          titulo="Mi Modal"
           onClose={() => setModalAbierto(false)}>
-          <p>Hola 😎 soy un modal reusable</p>
+          <p>Modal</p>
         </Modal>
 
       <h3>Tabla de grillaHola</h3>

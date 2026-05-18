@@ -1,3 +1,5 @@
+import "./Modal.css";
+
 type ModalProps = {
   abierto: boolean;
   titulo: string;
@@ -12,44 +14,32 @@ export default function Modal({
   onClose,
 }: ModalProps) {
 
-  // SI ESTA CERRADO NO MUESTRA NADA
   if (!abierto) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        background: "rgba(0,0,0,0.5)",
+    <div className="modal-overlay">
 
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {/* CAJA DEL MODAL */}
-      <div
-        style={{
-          background: "white",
-          padding: "20px",
-          borderRadius: "10px",
-          minWidth: "300px",
-        }}
-      >
-        {/* TITULO */}
-        <h2>{titulo}</h2>
+      <div className="modal-container">
 
-        {/* CONTENIDO */}
-        <div>{children}</div>
+        <h2 className="modal-title">
+          {titulo}
+        </h2>
 
-        {/* BOTON CERRAR */}
-        <button onClick={onClose}>
-          Cerrar
-        </button>
+        <div className="modal-content">
+          {children}
+        </div>
+
+        <div className="modal-actions">
+          <button
+            className="modal-button"
+            onClick={onClose}
+          >
+            Cerrar
+          </button>
+        </div>
+
       </div>
+
     </div>
   );
 }
