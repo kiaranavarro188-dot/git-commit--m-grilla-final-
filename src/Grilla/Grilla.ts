@@ -31,9 +31,8 @@ export class Grilla {
   }
 
   public borrarFila(): void {
-
-  this.filas.pop();
-}
+    this.filas.pop();
+  }
 
   public agregarColumna(): void {
     // si ya existe Extra le sumamos un numero
@@ -52,18 +51,6 @@ export class Grilla {
     this.fuente = this.fuentes[this.iFuente];
   }
 
-  public renombrarColumna(viejoNombre: string, nuevoNombre: string): void {
-  const indice = this.columnas.indexOf(viejoNombre)
-  if (indice !== -1) {
-    this.columnas[indice] = nuevoNombre
-   
-    for (const fila of this.filas) {
-      const valor = fila.getCampo(viejoNombre)
-      fila.setCampo(nuevoNombre, valor)
-    }
-  }
-}
-
   public cambiarColor(): void {
     this.iColor = (this.iColor + 1) % this.colores.length;
     this.color = this.colores[this.iColor];
@@ -75,24 +62,45 @@ export class Grilla {
 
   public editarFila(indice: number, datos: any): void {
     if (this.filas[indice]) this.filas[indice] = new Fila(datos);
-
-
-  }
-public eliminarFila(indice: number): void {
-  // saca la fila del array
-  this.filas.splice(indice, 1);
-}
-
-public getFila(indice: number): any {
-  // devuelve el objeto plano de una fila especifica
-  if (this.filas[indice]) {
-    return this.filas[indice].toObjeto();
   }
 
-  
-  return null;
-}
+  public eliminarFila(indice: number): void {
+    // saca la fila del array
+    this.filas.splice(indice, 1);
+  }
 
+  public getFila(indice: number): any {
+    if (this.filas[indice]) {
+      return this.filas[indice].toObjeto();
+    }
+    return null;
+  }
+
+  public renombrarColumna(viejoNombre: string, nuevoNombre: string): void {
+    const indice = this.columnas.indexOf(viejoNombre)
+    if (indice !== -1) {
+      this.columnas[indice] = nuevoNombre
+      for (const fila of this.filas) {
+        const valor = fila.getCampo(viejoNombre)
+        fila.setCampo(nuevoNombre, valor)
+      }
+    }
+  }
+
+  public borrarColumna(nombre: string): void {
+    // no dejar borrar la columna id
+    if (nombre === 'id') return
+
+    const indice = this.columnas.indexOf(nombre)
+    if (indice !== -1) {
+      // saca la columna del array
+      this.columnas.splice(indice, 1)
+      // tambien saca el campo de cada fila
+      for (const fila of this.filas) {
+        fila.setCampo(nombre, undefined)
+      }
+    }
+  }
 
   // getters
   public getFilasFiltradas(): any[] {
@@ -100,7 +108,7 @@ public getFila(indice: number): any {
     return this.filas
       .map(function (f, i) {
         const obj = f.toObjeto();
-        obj._indiceOriginal = i; // guardamos el indice original
+        obj._indiceOriginal = i;
         return obj;
       })
       .filter(function (obj) {

@@ -1,8 +1,6 @@
 import { colores } from './Colores'
 
-// boton reutilizable
-// soporta variantes: primario, celeste, blanco, iconoSolo
-// el modo iconoSolo es cuadrado, sin texto, solo un icono dentro
+
 export default function Boton(props: any) {
   const variante = props.variante || 'primario'
   const tamano = props.tamano || 'medio'

@@ -3,8 +3,8 @@
 
   height: calc(100vh - 70px);
 
-  background: #102a54;
-
+  /* degrade sutil de azul oscuro a azul un poco mas claro, vertical */
+background: linear-gradient(180deg, #0b2c5d 0%, #3b82f6 100%);
   color: white;
 
   padding: 20px;

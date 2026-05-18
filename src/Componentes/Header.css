@@ -1,7 +1,8 @@
 .header {
   height: 70px;
 
-  background: #0b2c5d;
+  /* degrade sutil de azul oscuro a azul un poco mas claro */
+  background: linear-gradient(135deg, #0b2c5d 0%, #3b82f6 100%);
 
   display: flex;
   justify-content: space-between;

@@ -1,5 +1,3 @@
-// paleta de colores del proyecto
-// si hay que cambiar el color principal, se cambia aca y se actualiza en todos lados
 
 export const colores = {
   // azules principales
