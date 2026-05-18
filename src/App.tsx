@@ -2,21 +2,16 @@ import { useState, useRef } from 'react'
 import BarraHerramientas from './BarraHerramientas'
 import Grilla from './Grilla'
 import { Grilla as GrillaLogica } from './Grilla/Grilla'
-
-// componentes que hizo Galia
 import Header from './Componentes/Header'
 import Modal from './Componentes/Modal'
 import Sidebar from './Componentes/Sidebar'
-
-// botones reutilizables
 import BotonExportar from './Componentes/BotonExportar'
 import BotonRefrescar from './Componentes/BotonRefrescar'
 import BotonEditarColumnas from './Componentes/BotonEditarColumnas'
-
-// botones que hizo el usuario
 import BotonAgregar from './Componentes/BotonAgregar'
 import BotonBorrar from './Componentes/BotonBorrar'
-import BotonBuscar from './Componentes/BotonBuscar'
+import BotonBuscar from './Componentes/BotonBuscar';
+import SignIn from './Componentes/SignIn';
 
 const datosIniciales1 = [
   { id: 1, nombre: 'Juan Perez', edad: 30, sexo: "Masculino", ciudad: "Buenos Aires" },
@@ -40,6 +35,7 @@ const datosIniciales2 = [
 ];
 
 export default function App() {
+  const [logueado, setLogueado] = useState(false);
   const [sidebarAbierto, setSidebarAbierto] = useState(true);
 
   // creamos las instancias de las clases con useRef
@@ -52,6 +48,12 @@ export default function App() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoModal, setModoModal] = useState<'editar' | 'ver'>('editar');
   const [filaSeleccionada, setFilaSeleccionada] = useState<any>(null);
+
+  if (!logueado) {
+    return (
+      <SignIn onSignIn={() => setLogueado(true)} />
+    );
+  }
 
   function actualizar() {
     forzarRender(function (x) { return x + 1; });
@@ -149,10 +151,12 @@ export default function App() {
   }
 
   return (
+
     <div>
-      <Header 
-        titulo="Mi Proyecto" 
-        onMenuClick={() => setSidebarAbierto(!sidebarAbierto)} 
+
+      <Header
+        titulo="Mi Proyecto"
+        onMenuClick={() => setSidebarAbierto(!sidebarAbierto)}
       />
 
       <div style={{ display: 'flex' }}>
@@ -161,15 +165,30 @@ export default function App() {
             items={[
               {
                 label: "Dashboard",
-                onClick: () => console.log("Dashboard"),
+                // AQUÍ AGREGAMOS EL DESPLEGABLE DE DASHBOARD
+                subItems: [
+                  { label: "Resumen General", onClick: () => console.log("Resumen General") },
+                  { label: "Estadísticas", onClick: () => console.log("Estadísticas") },
+                  { label: "Reportes", onClick: () => console.log("Reportes") },
+                ]
               },
               {
                 label: "Usuarios",
-                onClick: () => console.log("Usuarios"),
+                // AQUÍ AGREGAMOS EL DESPLEGABLE DE USUARIOS
+                subItems: [
+                  { label: "Ver Listado", onClick: () => console.log("Ver Listado") },
+                  { label: "Añadir Nuevo", onClick: () => console.log("Añadir Nuevo") },
+                  { label: "Roles y Permisos", onClick: () => console.log("Roles y Permisos") },
+                ]
               },
               {
                 label: "Configuración",
-                onClick: () => console.log("Config"),
+                // ESTE ES EL DESPLEGABLE DE CONFIGURACIÓN
+                subItems: [
+                  { label: "Perfil", onClick: () => console.log("Perfil") },
+                  { label: "Seguridad", onClick: () => console.log("Seguridad") },
+                  { label: "Preferencias", onClick: () => console.log("Preferencias") },
+                ],
               },
             ]}
           />
@@ -211,7 +230,7 @@ export default function App() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px' }}>
             <h3>Listado de Herramientas</h3>
             <div>
-              <BotonExportar onClick={function() { console.log('exportar herramientas') }} />
+              <BotonExportar onClick={function () { console.log('exportar herramientas') }} />
               <BotonRefrescar onClick={actualizar} />
             </div>
           </div>
@@ -219,9 +238,9 @@ export default function App() {
           <Grilla
             instancia={grillaHerramientas.current}
             onActualizar={actualizar}
-            onEditar={function() { alert('Modal de herramientas pendiente') }}
-            onEliminar={function() { console.log('eliminar herramienta') }}
-            onVer={function() { alert('Ver herramienta') }}
+            onEditar={function () { alert('Modal de herramientas pendiente') }}
+            onEliminar={function () { console.log('eliminar herramienta') }}
+            onVer={function () { alert('Ver herramienta') }}
           />
         </div>
       </div>
@@ -251,13 +270,13 @@ function ContenidoModal(props: any) {
   const [datosEditados, setDatosEditados] = useState({ ...props.datos })
 
   function handleCambio(campo: string, valor: string) {
-    setDatosEditados(function(prev: any) {
+    setDatosEditados(function (prev: any) {
       return { ...prev, [campo]: valor }
     })
   }
 
   // sacamos los campos internos que no queremos mostrar
-  const campos = Object.keys(props.datos).filter(function(k) {
+  const campos = Object.keys(props.datos).filter(function (k) {
     return k !== '_indice' && k !== '_indiceOriginal'
   })
 
@@ -265,7 +284,7 @@ function ContenidoModal(props: any) {
   if (props.modo === 'ver') {
     return (
       <div>
-        {campos.map(function(campo) {
+        {campos.map(function (campo) {
           return (
             <p key={campo} style={{ margin: '8px 0' }}>
               <strong>{campo}:</strong> {props.datos[campo]}
@@ -279,14 +298,14 @@ function ContenidoModal(props: any) {
   // modo editar: muestra inputs y botones de guardar/cancelar
   return (
     <div>
-      {campos.map(function(campo) {
+      {campos.map(function (campo) {
         return (
           <div key={campo} style={{ margin: '8px 0' }}>
             <label style={{ display: 'block', marginBottom: '4px' }}>{campo}:</label>
             <input
               type="text"
               value={datosEditados[campo] || ''}
-              onChange={function(e) { handleCambio(campo, e.target.value) }}
+              onChange={function (e) { handleCambio(campo, e.target.value) }}
               style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
             />
           </div>
@@ -294,7 +313,7 @@ function ContenidoModal(props: any) {
       })}
       <div style={{ marginTop: '15px', display: 'flex', gap: '8px' }}>
         <button
-          onClick={function() { props.onGuardar(datosEditados) }}
+          onClick={function () { props.onGuardar(datosEditados) }}
           style={{ padding: '8px 16px', background: '#1e40af', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
           Guardar
